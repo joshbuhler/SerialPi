@@ -7,12 +7,12 @@ let package = Package(
     name: "SerialPi",
     dependencies: [
         .package(
-            name: "Files",
+            //name: "Files",
             url: "https://github.com/johnsundell/files.git",
             from: "4.0.0"
             ),
         .package(
-            name: "SwiftSerial",
+            //name: "SwiftSerial",
             url: "https://github.com/yeokm1/SwiftSerial.git",
             from: "0.1.2"
             )
@@ -29,6 +29,6 @@ let package = Package(
             ),
         .testTarget(
             name: "SerialPiTests",
-            dependencies: ["SerialPiCore", "Files"]),
+            dependencies: ["SerialPiCore", "Files", "SwiftSerial"]),
     ]
 )
