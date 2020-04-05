@@ -14,7 +14,8 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "SerialPi",
-            dependencies: []),
+            dependencies: ["SerialPiCore"]),
+        .target(name: "SerialPiCore"),
         .testTarget(
             name: "SerialPiTests",
             dependencies: ["SerialPi"]),
