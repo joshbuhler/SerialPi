@@ -9,6 +9,15 @@
           "revision": "22fe84797d499ffca911ccd896b34efaf06a50b9",
           "version": "4.1.1"
         }
+      },
+      {
+        "package": "SwiftSerial",
+        "repositoryURL": "https://github.com/yeokm1/SwiftSerial.git",
+        "state": {
+          "branch": null,
+          "revision": "0e824cc38c6802e69543d0c1406d34babfd68e2e",
+          "version": "0.1.2"
+        }
       }
     ]
   },

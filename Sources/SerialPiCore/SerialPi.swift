@@ -1,5 +1,6 @@
 import Foundation
 import Files
+import SwiftSerial
 
 public final class SerialPi {
 	private let arguments:[String]
