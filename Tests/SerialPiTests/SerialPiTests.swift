@@ -26,7 +26,7 @@ final class SerialPiTests: XCTestCase {
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         let output = String(data: data, encoding: .utf8)
 
-        XCTAssertEqual(output, "Hello, world!\n")
+        XCTAssertEqual(output, "Hey Howdy Hey!\n")
     }
 
     /// Returns path to the built products directory.
@@ -43,5 +43,11 @@ final class SerialPiTests: XCTestCase {
 
     static var allTests = [
         ("testExample", testExample),
+        ("test_myTest", test_myTest)
     ]
+
+
+    func test_myTest () {
+        XCTAssertTrue(true)
+    }
 }
