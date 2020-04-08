@@ -22,7 +22,8 @@ public final class SerialPi {
 		// } catch {
 		// 	throw Error.failedToCreateFile
 		// }
-		doPortThing()
+		// doPortThing()
+		fastlane()
 
 	}
 
@@ -46,6 +47,25 @@ public final class SerialPi {
 				print ("error writing to port: \(error)")
 			}
 
+	}
+
+	func fastlane() {
+		let fl = Process()
+		// fl.executableURL = URL(string:"/usr/local/bin/fastlane")
+
+		var pipe = Pipe()
+
+		fl.standardOutput = pipe
+
+		do {
+			// try fl.run()
+			let data = pipe.fileHandleForReading.readDataToEndOfFile()
+			if let output = String(data: data, encoding:String.Encoding.utf8) {
+				print("Output: \(output)")
+			}
+		} catch {
+			print ("derp")
+		}
 	}
 
 
