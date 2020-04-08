@@ -73,7 +73,8 @@ public final class SerialPi {
 	/** 
 	Using Process and Pipe. Want to try writing & reading via stdin/stdout.
 	Process compiles/runs fine on Pi, but on macOS get complaints about
-	availability of different properties.
+	availability of different properties. Not 100% sure why the code here runs
+	fine on the Pi, but barfs on macOS.
 	*/
 	func doProcessThing() {
 		print ("⚙️  doProcessThing")
