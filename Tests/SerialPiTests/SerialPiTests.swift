@@ -1,5 +1,6 @@
 import XCTest
 import class Foundation.Bundle
+import SerialPiCore
 
 final class SerialPiTests: XCTestCase {
     func testExample() throws {
@@ -43,11 +44,45 @@ final class SerialPiTests: XCTestCase {
 
     static var allTests = [
         ("testExample", testExample),
-        ("test_myTest", test_myTest)
+        ("test_myTest", test_myTest),
+        ("test_portThing", test_portThing)
     ]
 
 
     func test_myTest () {
         XCTAssertTrue(true)
     }
+
+    func test_portThing() throws {
+        // Create an instance of the command line tool
+        let arguments = ["port"]
+        let tool = SerialPi(arguments: arguments)
+
+        // Run the tool and assert that the file was created
+        try tool.run()
+        XCTAssertTrue(true)
+    }
+
+    // func test_fileThing() throws {
+    //     // Setup a temp test folder that can be used as a sandbox
+    //     let tempFolder = Folder.temporary
+    //     let testFolder = try tempFolder.createSubfolderIfNeeded(
+    //         withName: "CommandLineToolTests"
+    //     )
+
+    //     // Empty the test folder to ensure a clean state
+    //     try testFolder.empty()
+
+    //     // Make the temp folder the current working folder
+    //     let fileManager = FileManager.default
+    //     fileManager.changeCurrentDirectoryPath(testFolder.path)
+
+    //     // Create an instance of the command line tool
+    //     let arguments = [testFolder.path, "Hello.swift"]
+    //     let tool = CommandLineTool(arguments: arguments)
+
+    //     // Run the tool and assert that the file was created
+    //     try tool.run()
+    //     XCTAssertNotNil(try? testFolder.file(named: "Hello.swift"))
+    // }
 }
