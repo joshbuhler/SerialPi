@@ -51,14 +51,16 @@ public final class SerialPi {
 
 	func fastlane() {
 		let fl = Process()
-		// fl.executableURL = URL(string:"/usr/local/bin/fastlane")
-
+		//fl.executableURL = URL(string:"/usr/local/bin/fastlane")
+		//fl.executableURL = URL(string:"/bin/ls")
+		fl.executableURL = URL(string:"/usr/bin/axcall")
+		//fl.arguments = ["-la"]
 		var pipe = Pipe()
 
 		fl.standardOutput = pipe
 
 		do {
-			// try fl.run()
+			try fl.run()
 			let data = pipe.fileHandleForReading.readDataToEndOfFile()
 			if let output = String(data: data, encoding:String.Encoding.utf8) {
 				print("Output: \(output)")
