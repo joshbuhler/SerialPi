@@ -11,30 +11,51 @@ public final class SerialPi {
 
 	public func run() throws {
 		print ("Hey Howdy Hey!")
-		// guard arguments.count > 1 else {
-		// 	throw Error.missingFileName
-		// }
+		guard arguments.count > 1 else {
+			throw Error.missingArgument
+		}
 
-		// let fileName = arguments[1]
+		let thing = arguments[1]
+		switch thing {
+			case "file":
+				let filename = arguments[2]
+				try? doFileThing(name: filename)
+			case "port":
+				doPortThing()
+			case "process":
+				doProcessThing()
+			default:
+				print("Not a valid option. ( file [filename] | port | process )")
 
-		// do {
-		// 	try Folder.current.createFile(at: fileName)
-		// } catch {
-		// 	throw Error.failedToCreateFile
-		// }
-		// doPortThing()
-		fastlane()
-
+		}
 	}
 
+	/**
+	Creates an empty file. From the tutorial I followed when setting this up.
+	(see README)
+	*/
+	func doFileThing(name:String) throws {
+		print ("📂  doFileThing")
+
+		do {
+			try Folder.current.createFile(at: name)
+		} catch {
+			throw Error.failedToCreateFile
+		}
+	}
+
+	// Messing with sending data to the same port normally bound by kissattach.
+	// Looks like if the port is bound though, I can't write to it.
 	func doPortThing () {
+		print ("🛳  doPortThing")
+
 		let serialPort:SerialPort = SerialPort(path: "/dev/ttyAMA0")
 		
 		do {
 			try serialPort.openPort()
-			} catch let error {
-				print ("Failed to open serial port: \(error)")
-			}
+		} catch let error {
+			print ("Failed to open serial port: \(error)")
+		}
 
 		serialPort.setSettings(receiveRate: .baud9600,
 			transmitRate: .baud9600,
@@ -49,24 +70,34 @@ public final class SerialPi {
 
 	}
 
-	func fastlane() {
-		let fl = Process()
-		//fl.executableURL = URL(string:"/usr/local/bin/fastlane")
-		//fl.executableURL = URL(string:"/bin/ls")
-		fl.executableURL = URL(string:"/usr/bin/axcall")
-		//fl.arguments = ["-la"]
-		var pipe = Pipe()
+	/** 
+	Using Process and Pipe. Want to try writing & reading via stdin/stdout.
+	Process compiles/runs fine on Pi, but on macOS get complaints about
+	availability of different properties.
+	*/
+	func doProcessThing() {
+		print ("⚙️  doProcessThing")
 
-		fl.standardOutput = pipe
+		if #available(macOS 10.13, *) {
+			let fl = Process()
+			//fl.executableURL = URL(string:"/usr/local/bin/fastlane")
+			fl.executableURL = URL(string:"/bin/ls")
+			//fl.executableURL = URL(string:"/usr/bin/axcall")
+			fl.arguments = ["-la"]
+			
+			let pipe = Pipe()
 
-		do {
-			try fl.run()
-			let data = pipe.fileHandleForReading.readDataToEndOfFile()
-			if let output = String(data: data, encoding:String.Encoding.utf8) {
-				print("Output: \(output)")
+			fl.standardOutput = pipe
+
+			do {
+				try fl.run()
+				let data = pipe.fileHandleForReading.readDataToEndOfFile()
+				if let output = String(data: data, encoding:String.Encoding.utf8) {
+					print("Output: \(output)")
+				}
+			} catch {
+				print ("derp")
 			}
-		} catch {
-			print ("derp")
 		}
 	}
 
@@ -75,7 +106,8 @@ public final class SerialPi {
 
 public extension SerialPi {
 	enum Error: Swift.Error {
-		case missingFileName
+		case missingFilename
 		case failedToCreateFile
+		case missingArgument
 	}
 }
