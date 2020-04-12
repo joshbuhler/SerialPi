@@ -106,25 +106,48 @@ public final class SerialPi {
 	}
 
 	func doRubyThing() {
-		print ("Doing ♦️ rubyThing")
+		print ("🐦 Doing rubyThing")
+		// sleep(2)
+		// print ("Awake")
 		if #available(macOS 10.13, *) {
-			let fl = Process()
-			fl.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
-			fl.arguments = ["./ruby/echochamber.rb"]
+			let proc = Process()
+			proc.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
+			proc.arguments = ["./ruby/echochamber.rb"]
 			
-			let pipe = Pipe()
+			let inPipe = Pipe()
+			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+				// guard let strongSelf = self else { return }
 
-			fl.standardOutput = pipe
+				let data = fileHandle.availableData
+				if let string = String(data: data, encoding: String.Encoding.utf8) {
+					print ("🐦 string: \(string)")
+				}
+			}
+
+			let outPipe = Pipe()
+
+			proc.standardOutput = inPipe
+			proc.standardInput = outPipe
 
 			do {
-				try fl.run()
-				let data = pipe.fileHandleForReading.readDataToEndOfFile()
+				try proc.run()
+				// let data = pipe.fileHandleForReading.readDataToEndOfFile()
+				let outString = "🐦 Swift says hello"
+				if let outData = outString.data(using: .utf8) {
+					print("🐦 writing outData\n")
+					outPipe.fileHandleForWriting.write(outData)
+					outPipe.fileHandleForWriting.closeFile()
+				}
+
+				let data = inPipe.fileHandleForReading.availableData
+				// let data = pipe.fileHandleForReading.readData(ofLength: 10)
 				if let output = String(data: data, encoding:String.Encoding.utf8) {
-					print("Output: \(output)")
+					print("🐦 Output: \(output)")
 				}
 			} catch {
-				print ("derp")
+				print ("🐦 derp")
 			}
+
 		}
 	}
 
