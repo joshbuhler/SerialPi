@@ -24,8 +24,10 @@ public final class SerialPi {
 				doPortThing()
 			case "process":
 				doProcessThing()
+			case "ruby":
+				doRubyThing()
 			default:
-				print("Not a valid option. ( file [filename] | port | process )")
+				print("Not a valid option. ( file [filename] | port | process | ruby )")
 
 		}
 	}
@@ -86,6 +88,29 @@ public final class SerialPi {
 			fl.executableURL = URL(fileURLWithPath:"/bin/ls")
 			//fl.executableURL = URL(fileURLWithPath:"/usr/bin/axcall")
 			fl.arguments = ["-la"]
+			
+			let pipe = Pipe()
+
+			fl.standardOutput = pipe
+
+			do {
+				try fl.run()
+				let data = pipe.fileHandleForReading.readDataToEndOfFile()
+				if let output = String(data: data, encoding:String.Encoding.utf8) {
+					print("Output: \(output)")
+				}
+			} catch {
+				print ("derp")
+			}
+		}
+	}
+
+	func doRubyThing() {
+		print ("Doing ♦️ rubyThing")
+		if #available(macOS 10.13, *) {
+			let fl = Process()
+			fl.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
+			fl.arguments = ["./ruby/echochamber.rb"]
 			
 			let pipe = Pipe()
 
