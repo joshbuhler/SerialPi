@@ -81,9 +81,10 @@ public final class SerialPi {
 
 		if #available(macOS 10.13, *) {
 			let fl = Process()
-			//fl.executableURL = URL(string:"/usr/local/bin/fastlane")
-			fl.executableURL = URL(string:"/bin/ls")
-			//fl.executableURL = URL(string:"/usr/bin/axcall")
+			// Use fileURLWithPath - not URL(string:)
+			//fl.executableURL = URL(fileURLWithPath:"/usr/local/bin/fastlane")
+			fl.executableURL = URL(fileURLWithPath:"/bin/ls")
+			//fl.executableURL = URL(fileURLWithPath:"/usr/bin/axcall")
 			fl.arguments = ["-la"]
 			
 			let pipe = Pipe()
