@@ -132,7 +132,7 @@ public final class SerialPi {
 			do {
 				try proc.run()
 				// let data = pipe.fileHandleForReading.readDataToEndOfFile()
-				let outString = "🐦 Swift says hello"
+				let outString = "🐦 Swift says hello\n"
 				if let outData = outString.data(using: .utf8) {
 					print("🐦 writing outData\n")
 					outPipe.fileHandleForWriting.write(outData)
