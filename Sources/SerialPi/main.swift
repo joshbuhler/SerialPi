@@ -1,3 +1,4 @@
+import Foundation
 import SerialPiCore
 
 // https://www.swiftbysundell.com/articles/building-a-command-line-tool-using-the-swift-package-manager/
@@ -13,3 +14,5 @@ do {
 } catch let error {
 	print ("💩 - Error: \(error)")
 }
+
+RunLoop.main.run()

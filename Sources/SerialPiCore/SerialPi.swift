@@ -114,18 +114,14 @@ public final class SerialPi {
 			proc.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
 			proc.arguments = ["./ruby/echochamber.rb"]
 			
-			let group = DispatchGroup()
-			group.enter()
-
 			let inPipe = Pipe()
 			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
-				// guard let strongSelf = self else { return }
-
+			
 				let data = fileHandle.availableData
 				if let string = String(data: data, encoding: String.Encoding.utf8) {
 					print ("🐦 string: \(string)")
+					exit(0)
 				}
-				group.leave()
 			}
 
 			let outPipe = Pipe()
@@ -133,41 +129,32 @@ public final class SerialPi {
 			proc.standardOutput = inPipe
 			proc.standardInput = outPipe
 
-			// I think I need to get the process running in another thread
-			// otherwise it's blocking and not handling input/output until 
-			// the fileHandle is closed
-			
+			do {
+				try proc.run()
+				let lines = ["🐦 Swift says hello.\n",
+								"line 2\n",
+								"line 3\n",
+								"quit"]
+								// "\n"]
 
-			DispatchQueue.global(qos: .background).async {
-				do {
-					try proc.run()
-					// let data = pipe.fileHandleForReading.readDataToEndOfFile()
-					let lines = ["🐦 Swift says hello.\n",
-									"line 2\n",
-									"line 3\n",
-									"quit"]
-									// "\n"]
-
-					for line in lines {
-						let outString = line
-						if let outData = outString.data(using: .utf8) {
-							print("🐦 writing outData\n")
-							outPipe.fileHandleForWriting.write(outData)
-						}
+				for line in lines {
+					let outString = line
+					if let outData = outString.data(using: .utf8) {
+						print("🐦 writing outData\n")
+						outPipe.fileHandleForWriting.write(outData)
 					}
-					outPipe.fileHandleForWriting.closeFile()
-
-					// Looks like we can have a readabilityHandler or read available data, but not both
-					// let data = inPipe.fileHandleForReading.availableData
-					// // let data = pipe.fileHandleForReading.readData(ofLength: 10)
-					// if let output = String(data: data, encoding:String.Encoding.utf8) {
-					// 	print("🐦 Output: \(output)")
-					// }
-				} catch {
-					print ("🐦 derp")
 				}
+				outPipe.fileHandleForWriting.closeFile()
+
+				// Looks like we can have a readabilityHandler or read available data, but not both
+				// let data = inPipe.fileHandleForReading.availableData
+				// // let data = pipe.fileHandleForReading.readData(ofLength: 10)
+				// if let output = String(data: data, encoding:String.Encoding.utf8) {
+				// 	print("🐦 Output: \(output)")
+				// }
+			} catch {
+				print ("🐦 derp")
 			}
-			group.wait()
 		}
 	}
 
