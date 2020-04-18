@@ -179,7 +179,10 @@ public final class SerialPi {
 
 			do {
 				try proc.run()
-				let lines = ["🐦 Swift says hello.\n",
+
+				sleep(3)
+
+				let lines = ["Swift says hello.\n",
 								"line 2\n",
 								"line 3\n",
 								"quit"]
@@ -188,8 +191,10 @@ public final class SerialPi {
 				for line in lines {
 					let outString = line
 					if let outData = outString.data(using: .utf8) {
-						print("🐦 writing outData\n")
+						print("🐦 writing: \(outString)\n")
 						outPipe.fileHandleForWriting.write(outData)
+						// fflush(stdout)
+						sleep(1)
 					}
 				}
 				outPipe.fileHandleForWriting.closeFile()
@@ -200,6 +205,7 @@ public final class SerialPi {
 				// if let output = String(data: data, encoding:String.Encoding.utf8) {
 				// 	print("🐦 Output: \(output)")
 				// }
+				proc.waitUntilExit()
 			} catch {
 				print ("🐦 derp")
 			}
