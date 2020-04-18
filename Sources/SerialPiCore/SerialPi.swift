@@ -111,25 +111,45 @@ public final class SerialPi {
 
 		if #available(macOS 10.13, *) {
 			let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
-			taskQueue.async {
-				Thread.sleep(forTimeInterval: 2.0)
-				print ("async")
-
-				self.buildTask = Process()
-				self.buildTask.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
-				self.buildTask.arguments = ["./ruby/echo2.rb"]
-				self.buildTask.terminationHandler = { (process) in 
+			taskQueue.async { [weak self] in
+				
+				self?.buildTask = Process()
+				self?.buildTask.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
+				self?.buildTask.arguments = ["./ruby/echo2.rb"]
+				self?.buildTask.terminationHandler = { (process) in 
 					print ("terminationHandler")
 					exit(0)
 				}
 
-				try? self.buildTask.run()
-				self.buildTask.waitUntilExit()
+				if let task = self?.buildTask {
+					self?.captureOutput(proc: task)
+				}
+
+				try? self?.buildTask.run()
+				self?.buildTask.waitUntilExit()
 			}
 		}
 	}
 
-	// func captureOutput (proc:Process)
+	var outPipe:Pipe!
+	func captureOutput (proc:Process) {
+		outPipe = Pipe()
+		proc.standardOutput = outPipe
+
+		outPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
+
+		let nc = NotificationCenter.default
+		nc.addObserver(forName: Notification.Name.NSFileHandleDataAvailable,
+			object: outPipe.fileHandleForReading,
+			queue: nil) { [weak self] n in
+
+			if let output = self?.outPipe.fileHandleForReading.availableData {
+				let outString = String(data: output, encoding: String.Encoding.utf8) ?? "noData"
+				print ("outString: \(outString)")
+				self?.outPipe.fileHandleForReading.waitForDataInBackgroundAndNotify()
+			}
+		}
+	}
 
 	func doRubyThing() {
 		print ("🐦 Doing rubyThing")
