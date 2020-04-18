@@ -23,7 +23,7 @@ public final class SerialPi {
 			case "port":
 				doPortThing()
 			case "process":
-				doProcessThing()
+				doProcessThing2()
 			case "ruby":
 				doRubyThing()
 			default:
@@ -104,6 +104,32 @@ public final class SerialPi {
 			}
 		}
 	}
+
+	var buildTask:Process!
+	func doProcessThing2() {
+		print ("⚙️  doProcessThing2")
+
+		if #available(macOS 10.13, *) {
+			let taskQueue = DispatchQueue.global(qos: DispatchQoS.QoSClass.background)
+			taskQueue.async {
+				Thread.sleep(forTimeInterval: 2.0)
+				print ("async")
+
+				self.buildTask = Process()
+				self.buildTask.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
+				self.buildTask.arguments = ["./ruby/echo2.rb"]
+				self.buildTask.terminationHandler = { (process) in 
+					print ("terminationHandler")
+					exit(0)
+				}
+
+				try? self.buildTask.run()
+				self.buildTask.waitUntilExit()
+			}
+		}
+	}
+
+	// func captureOutput (proc:Process)
 
 	func doRubyThing() {
 		print ("🐦 Doing rubyThing")
