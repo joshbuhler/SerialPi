@@ -1,4 +1,5 @@
 puts("♦️ Starting echochamber")
+STDOUT.flush
 
 # This will keep the script running until it's killed.
 keepRunning = true
@@ -15,7 +16,9 @@ while line=STDIN.getc do
 	end
 
 	if (line == "\n")
-		puts("♦️ endOfLine: #{outputStr}")
+		puts("♦️ #{outputStr}")
+		STDOUT.flush
+		sleep(1)
 		break
 	end
 end
