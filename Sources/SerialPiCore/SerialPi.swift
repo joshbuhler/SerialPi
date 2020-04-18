@@ -165,8 +165,10 @@ public final class SerialPi {
 			
 				let data = fileHandle.availableData
 				if let string = String(data: data, encoding: String.Encoding.utf8) {
-					print ("🐦 string: \(string)")
-					exit(0)
+					if (string.isEmpty) {
+						exit(0)
+					}
+					print ("🐦 readHandler: \(string)")
 				}
 			}
 
