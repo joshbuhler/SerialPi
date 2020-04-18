@@ -1,5 +1,5 @@
 puts("♦️ Starting echochamber")
-
-sleep(2)
+STDOUT.flush
+sleep(3)
 
 puts("♦️ goodbye")
