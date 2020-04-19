@@ -23,9 +23,13 @@ public final class SerialPi {
 			case "port":
 				doPortThing()
 			case "process":
+				doProcessThing()
+			case "process2":
 				doProcessThing2()
 			case "ruby":
 				doRubyThing()
+			case "ping":
+				doPingThing()
 			default:
 				print("Not a valid option. ( file [filename] | port | process | ruby )")
 
@@ -98,6 +102,7 @@ public final class SerialPi {
 				let data = pipe.fileHandleForReading.readDataToEndOfFile()
 				if let output = String(data: data, encoding:String.Encoding.utf8) {
 					print("Output: \(output)")
+
 				}
 			} catch {
 				print ("derp")
@@ -205,6 +210,38 @@ public final class SerialPi {
 				// if let output = String(data: data, encoding:String.Encoding.utf8) {
 				// 	print("🐦 Output: \(output)")
 				// }
+				proc.waitUntilExit()
+			} catch {
+				print ("🐦 derp")
+			}
+		}
+	}
+
+	func doPingThing() {
+		print ("🐦 Doing pingThing")
+		// sleep(2)
+		// print ("Awake")
+		if #available(macOS 10.13, *) {
+			let proc = Process()
+			proc.executableURL = URL(fileURLWithPath:"/sbin/ping")
+			proc.arguments = ["192.168.1.99"]
+			
+			let inPipe = Pipe()
+			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+			
+				let data = fileHandle.availableData
+				if let string = String(data: data, encoding: String.Encoding.utf8) {
+					if (string.isEmpty) {
+						exit(0)
+					}
+					print ("🐦 readHandler: \(string)")
+				}
+			}
+
+			proc.standardOutput = inPipe
+
+			do {
+				try proc.run()
 				proc.waitUntilExit()
 			} catch {
 				print ("🐦 derp")
