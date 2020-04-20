@@ -30,6 +30,8 @@ public final class SerialPi {
 				doRubyThing()
 			case "ping":
 				doPingThing()
+			case "kiss":
+				doKissThing()
 			default:
 				print("Not a valid option. ( file [filename] | port | process | ruby )")
 
@@ -225,6 +227,37 @@ public final class SerialPi {
 			let proc = Process()
 			proc.executableURL = URL(fileURLWithPath:"/sbin/ping")
 			proc.arguments = ["192.168.1.99"]
+			
+			let inPipe = Pipe()
+			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+			
+				let data = fileHandle.availableData
+				if let string = String(data: data, encoding: String.Encoding.utf8) {
+					if (string.isEmpty) {
+						exit(0)
+					}
+					print ("🐦 readHandler: \(string)")
+				}
+			}
+
+			proc.standardOutput = inPipe
+
+			do {
+				try proc.run()
+				proc.waitUntilExit()
+			} catch {
+				print ("🐦 derp")
+			}
+		}
+	}
+
+	func doKissThing() {
+		print ("🐦 Doing kissThing")
+
+		if #available(macOS 10.13, *) {
+			let proc = Process()
+			proc.executableURL = URL(fileURLWithPath:"/usr/sbin/kissattach")
+			proc.arguments = ["/dev/ttyAMA0", "3", "10.1.1.1"]
 			
 			let inPipe = Pipe()
 			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
