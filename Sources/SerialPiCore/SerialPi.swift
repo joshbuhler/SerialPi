@@ -191,9 +191,14 @@ public final class SerialPi {
 			proc.standardOutput = inPipe
 			proc.standardInput = outPipe
 
+			proc.terminationHandler = { (process) in 
+				print ("🐦 terminationHandler")
+				exit(0)
+			}
+
 			do {
 				try proc.run()
-				proc.waitUntilExit()
+				// proc.waitUntilExit() // using terminationHandler this isn't needed. Keeping for reference.
 			} catch {
 				print ("🐦 derp")
 			}
@@ -207,9 +212,6 @@ public final class SerialPi {
 				print("🐦 writing: \(outString)\n")
 				outPipe.fileHandleForWriting.write(outData)
 				// fflush(stdout)
-				// if we sleep and wait a moment, then we have better luck at closing the app when ruby exits
-				// because the next time we hit the read handler, the ruby proc has been killed
-				sleep(1)
 			}
 		}
 	}
