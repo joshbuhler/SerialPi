@@ -30,6 +30,8 @@ public final class SerialPi {
 				doRubyThing()
 			case "ping":
 				doPingThing()
+			case "listen":
+				doListenThing()
 			case "kiss":
 				doKissThing()
 			default:
@@ -233,6 +235,37 @@ public final class SerialPi {
 				//proc.arguments = ["192.168.1.99"]
 				proc.arguments = ["\(ipAddress)"]
 			}
+			
+			let inPipe = Pipe()
+			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+			
+				let data = fileHandle.availableData
+				if let string = String(data: data, encoding: String.Encoding.utf8) {
+					if (string.isEmpty) {
+						exit(0)
+					}
+					print ("🐦 readHandler: \(string)")
+				}
+			}
+
+			proc.standardOutput = inPipe
+
+			do {
+				try proc.run()
+				proc.waitUntilExit()
+			} catch {
+				print ("🐦 derp")
+			}
+		}
+	}
+
+	func doListenThing() {
+		print ("🐦 Doing listenThing")
+		
+		if #available(macOS 10.13, *) {
+			let proc = Process()
+			proc.executableURL = URL(fileURLWithPath:"/usr/bin/axlisten")
+			proc.arguments = ["-a"]
 			
 			let inPipe = Pipe()
 			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
