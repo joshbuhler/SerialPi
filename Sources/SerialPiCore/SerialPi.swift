@@ -34,6 +34,8 @@ public final class SerialPi {
 				doListenThing()
 			case "call":
 				doCallThing()
+			case "call2":
+				doCallThing2()
 			case "kiss":
 				doKissThing()
 			case "pipe":
@@ -347,6 +349,59 @@ public final class SerialPi {
 			} catch {
 				print ("🐦 derp")
 				exit(1)
+			}
+		}
+	}
+
+	func doCallThing2() {
+		print ("🐦 Doing doCallThing2")
+		
+		if #available(macOS 10.15, *) {
+			let proc = Process()
+			proc.executableURL = URL(fileURLWithPath:"/usr/bin/axcall")
+			proc.arguments = ["-s", "kc6bsa", "3", "ac7br-4", "-r"]
+			
+			let inPipe = Pipe()
+			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+			
+				let data = fileHandle.availableData
+				if let string = String(data: data, encoding: String.Encoding.utf8) {
+					print ("🐦 running: \(proc.isRunning) read (\(data.count)): \(string)")
+					if (string.isEmpty || !proc.isRunning) {
+						exit(0)
+					}
+
+					// <debugging>
+					// this will print out all characters received for debuggin
+					string.unicodeScalars.map {
+						print ("char: \($0.escaped(asASCII: true))")
+					}
+
+					// if let lastChar = string.last {
+					// 	print ("lastChar: \(lastChar == "\n")")
+					// 	// everything coming in end with a line break?
+					// }
+					// </debugging>
+
+					self?.waitForInput()
+				}
+			}
+
+			self.outPipe = Pipe()
+			// let outFile = fdopen(outPipe.fileHandleForWriting.fileDescriptor, "w")
+			proc.standardOutput = inPipe
+			proc.standardInput = outPipe
+
+			proc.terminationHandler = { (process) in 
+				print ("🐦 terminationHandler")
+				exit(0)
+			}
+
+			do {
+				try proc.run()
+				// proc.waitUntilExit() // using terminationHandler this isn't needed. Keeping for reference.
+			} catch {
+				print ("🐦 derp")
 			}
 		}
 	}
