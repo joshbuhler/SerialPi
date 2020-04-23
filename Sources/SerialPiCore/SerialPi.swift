@@ -182,10 +182,17 @@ public final class SerialPi {
 						exit(0)
 					}
 
+					// <debugging>
+					// this will print out all characters received for debuggin
+					string.unicodeScalars.map {
+						print ("char: \($0.escaped(asASCII: true))")
+					}
+
 					// if let lastChar = string.last {
 					// 	print ("lastChar: \(lastChar == "\n")")
 					// 	// everything coming in end with a line break?
 					// }
+					// </debugging>
 
 					self?.waitForInput()
 				}

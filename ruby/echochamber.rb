@@ -7,7 +7,7 @@ while keepRunning do
 outputStr = ""
 while char=STDIN.getc do
 	outputStr << char
-	puts ("♦️ char: #{char}")
+	#puts ("♦️ char: #{char}")
 
 	# puts("ruby: #{outputStr}")
 	if (outputStr == "quit")
