@@ -182,6 +182,11 @@ public final class SerialPi {
 						exit(0)
 					}
 
+					// if let lastChar = string.last {
+					// 	print ("lastChar: \(lastChar == "\n")")
+					// 	// everything coming in end with a line break?
+					// }
+
 					self?.waitForInput()
 				}
 			}
