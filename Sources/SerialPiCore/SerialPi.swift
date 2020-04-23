@@ -36,6 +36,8 @@ public final class SerialPi {
 				doCallThing()
 			case "kiss":
 				doKissThing()
+			case "pipe":
+				doPipeThing()
 			default:
 				print("Not a valid option. ( file [filename] | port | process | ruby )")
 
@@ -369,7 +371,57 @@ public final class SerialPi {
 		}
 	}
 
+	func doPipeThing() {
+		print ("🐦 Doing pipeThing")
+		
+		if #available(macOS 10.13, *) {
 
+
+			let inPipe = Pipe()
+			let outPipe = Pipe()
+
+			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+				let data = fileHandle.availableData
+				if (data.isEmpty) {
+					return
+				}
+				print ("inPipe reading")
+				print ("data: \(data.count) isEmpty: \(data.isEmpty)")
+				// if let string = String(data: data, encoding: String.Encoding.utf8) {
+				// 	if (string.isEmpty) {
+				// 		exit(0)
+				// 	}
+				// 	print ("🐦 readHandler: \(string)")
+				// }
+			}
+
+			outPipe.fileHandleForWriting.writeabilityHandler = { [weak self] fileHandle in
+				// let data = fileHandle.availableData
+				// if (data.isEmpty) {
+				// 	return
+				// }
+				print ("outpipe reading")
+				// print ("data: \(data.count) isEmpty: \(data.isEmpty)")
+				// if let string = String(data: data, encoding: String.Encoding.utf8) {
+				// 	if (string.isEmpty) {
+				// 		exit(0)
+				// 	}
+				// 	print ("🐦 outPipe handler: \(string)")
+				// }
+			}
+
+			outPipe.fileHandleForWriting.write("blah".data(using: .utf8)!)
+
+			// if let outString = readLine(strippingNewline: true) {
+			// 	if let outData = outString.data(using: .utf8) {
+			// 		print("🐦 writing: \(outString)")
+			// 		outPipe.fileHandleForWriting.write(outData)
+			// 		// fflush(outFile)
+			// 		sleep(1)
+			// 	}
+			// }
+		}
+	}
 }
 
 public extension SerialPi {
