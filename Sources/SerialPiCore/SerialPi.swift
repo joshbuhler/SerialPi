@@ -298,7 +298,7 @@ public final class SerialPi {
 		if #available(macOS 10.13, *) {
 			let proc = Process()
 			proc.executableURL = URL(fileURLWithPath:"/usr/bin/axcall")
-			proc.arguments = ["-s", "kc6bsa", "3", "ac7br-4"]
+			proc.arguments = ["-s", "kc6bsa", "3", "ac7br-4", "-r"]
 			
 			let inPipe = Pipe()
 			let outPipe = Pipe()
@@ -316,11 +316,13 @@ public final class SerialPi {
 					print ("🐦 response (\(string.count)): \(string)")
 
 					if (string.count == 0) {
+						print ("cmd:")
 						if let cmd = readLine(strippingNewline: true),
 							let outData = cmd.data(using: .utf8) {
 							print("🐦 sending: \(cmd)\n")
-							outPipe.fileHandleForWriting.write(outData)
-							// fflush(stdout)
+							let handle = outPipe.fileHandleForWriting
+							handle.write(outData)
+							fflush(nil)
 						}
 					}
 				}
