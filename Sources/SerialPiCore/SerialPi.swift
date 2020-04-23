@@ -166,9 +166,8 @@ public final class SerialPi {
 
 	func doRubyThing() {
 		print ("🐦 Doing rubyThing")
-		// sleep(2)
-		// print ("Awake")
-		if #available(macOS 10.13, *) {
+		
+		if #available(macOS 10.15, *) {
 			let proc = Process()
 			proc.executableURL = URL(fileURLWithPath:"/usr/bin/ruby")
 			proc.arguments = ["./ruby/echochamber.rb"]
@@ -178,49 +177,39 @@ public final class SerialPi {
 			
 				let data = fileHandle.availableData
 				if let string = String(data: data, encoding: String.Encoding.utf8) {
-					if (string.isEmpty) {
+					print ("🐦 running: \(proc.isRunning) read (\(data.count)): \(string)")
+					if (string.isEmpty || !proc.isRunning) {
 						exit(0)
 					}
-					print ("🐦 readHandler: \(string)")
+
+					self?.waitForInput()
 				}
 			}
 
-			let outPipe = Pipe()
-
+			self.outPipe = Pipe()
+			// let outFile = fdopen(outPipe.fileHandleForWriting.fileDescriptor, "w")
 			proc.standardOutput = inPipe
 			proc.standardInput = outPipe
 
 			do {
 				try proc.run()
-
-				sleep(3)
-
-				let lines = ["Swift says hello.\n",
-								"line 2\n",
-								"line 3\n",
-								"quit"]
-								// "\n"]
-
-				for line in lines {
-					let outString = line
-					if let outData = outString.data(using: .utf8) {
-						print("🐦 writing: \(outString)\n")
-						outPipe.fileHandleForWriting.write(outData)
-						// fflush(stdout)
-						sleep(1)
-					}
-				}
-				outPipe.fileHandleForWriting.closeFile()
-
-				// Looks like we can have a readabilityHandler or read available data, but not both
-				// let data = inPipe.fileHandleForReading.availableData
-				// // let data = pipe.fileHandleForReading.readData(ofLength: 10)
-				// if let output = String(data: data, encoding:String.Encoding.utf8) {
-				// 	print("🐦 Output: \(output)")
-				// }
 				proc.waitUntilExit()
 			} catch {
 				print ("🐦 derp")
+			}
+		}
+	}
+
+	func waitForInput () {
+		print ("🐦 >:")
+		if let outString = readLine(strippingNewline: false) {
+			if let outData = outString.data(using: .utf8) {
+				print("🐦 writing: \(outString)\n")
+				outPipe.fileHandleForWriting.write(outData)
+				// fflush(stdout)
+				// if we sleep and wait a moment, then we have better luck at closing the app when ruby exits
+				// because the next time we hit the read handler, the ruby proc has been killed
+				sleep(1)
 			}
 		}
 	}
