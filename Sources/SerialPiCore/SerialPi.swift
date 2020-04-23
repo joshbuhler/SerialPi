@@ -304,6 +304,13 @@ public final class SerialPi {
 			let proc = Process()
 			proc.executableURL = URL(fileURLWithPath:"/usr/bin/axcall")
 			proc.arguments = ["-s", "kc6bsa", "3", "ac7br-4", "-r"]
+			// https://manpages.ubuntu.com/manpages/trusty/man1/axcall.1.html
+			// -s kc6bsa	|| the call being used
+			// 3			|| port to use, defined in /etc/ax25/axports
+			// ac7br-4		|| the callsign being called
+			// -r 			|| use Raw mode (no window being presented)
+			//
+			// slave mode (-h) doesn't appear to be what we want here
 			
 			let inPipe = Pipe()
 			let outPipe = Pipe()
