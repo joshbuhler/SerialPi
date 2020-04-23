@@ -32,6 +32,8 @@ public final class SerialPi {
 				doPingThing()
 			case "listen":
 				doListenThing()
+			case "call":
+				doCallThing()
 			case "kiss":
 				doKissThing()
 			default:
@@ -286,6 +288,47 @@ public final class SerialPi {
 				proc.waitUntilExit()
 			} catch {
 				print ("🐦 derp")
+			}
+		}
+	}
+
+	func doCallThing() {
+		print ("🐦 Doing callThing")
+		
+		if #available(macOS 10.13, *) {
+			let proc = Process()
+			proc.executableURL = URL(fileURLWithPath:"/usr/bin/axcall")
+			proc.arguments = ["-s", "kc6bsa", "3", "ac7br-4"]
+			
+			let inPipe = Pipe()
+			let outPipe = Pipe()
+
+			proc.standardOutput = inPipe
+			proc.standardInput = outPipe
+
+			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
+			
+				let data = fileHandle.availableData
+				if let string = String(data: data, encoding: String.Encoding.utf8) {
+					if (string.isEmpty) {
+						exit(0)
+					}
+					print ("🐦 cmd: \(string)")
+					if let cmd = readLine(strippingNewline: true),
+						let outData = cmd.data(using: .utf8) {
+						print("🐦 sending: \(cmd)\n")
+						outPipe.fileHandleForWriting.write(outData)
+						// fflush(stdout)
+					}
+				}
+			}
+
+			do {
+				try proc.run()
+				proc.waitUntilExit()
+			} catch {
+				print ("🐦 derp")
+				exit(1)
 			}
 		}
 	}
