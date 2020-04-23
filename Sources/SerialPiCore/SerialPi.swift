@@ -226,7 +226,13 @@ public final class SerialPi {
 		if #available(macOS 10.13, *) {
 			let proc = Process()
 			proc.executableURL = URL(fileURLWithPath:"/sbin/ping")
-			proc.arguments = ["192.168.1.99"]
+
+			print ("Ping who?")
+			if let ipAddress = readLine(strippingNewline: true) {
+
+				//proc.arguments = ["192.168.1.99"]
+				proc.arguments = ["\(ipAddress)"]
+			}
 			
 			let inPipe = Pipe()
 			inPipe.fileHandleForReading.readabilityHandler = { [weak self] fileHandle in
