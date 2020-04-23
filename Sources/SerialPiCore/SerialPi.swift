@@ -310,15 +310,18 @@ public final class SerialPi {
 			
 				let data = fileHandle.availableData
 				if let string = String(data: data, encoding: String.Encoding.utf8) {
-					if (string.isEmpty) {
-						exit(0)
-					}
-					print ("🐦 cmd: \(string)")
-					if let cmd = readLine(strippingNewline: true),
-						let outData = cmd.data(using: .utf8) {
-						print("🐦 sending: \(cmd)\n")
-						outPipe.fileHandleForWriting.write(outData)
-						// fflush(stdout)
+					// if (string.isEmpty) {
+					// 	exit(0)
+					// }
+					print ("🐦 response (\(string.count)): \(string)")
+
+					if (string.count == 0) {
+						if let cmd = readLine(strippingNewline: true),
+							let outData = cmd.data(using: .utf8) {
+							print("🐦 sending: \(cmd)\n")
+							outPipe.fileHandleForWriting.write(outData)
+							// fflush(stdout)
+						}
 					}
 				}
 			}
