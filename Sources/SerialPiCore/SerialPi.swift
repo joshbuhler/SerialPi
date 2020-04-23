@@ -219,6 +219,7 @@ public final class SerialPi {
 
 	func waitForInput () {
 		print ("🐦 >:")
+		// need to be sure to strip the newline, otherwise stuff doesn't get written to the pipe
 		if let outString = readLine(strippingNewline: false) {
 			if let outData = outString.data(using: .utf8) {
 				print("🐦 writing: \(outString)\n")
