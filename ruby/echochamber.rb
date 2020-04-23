@@ -5,20 +5,24 @@ STDOUT.flush
 keepRunning = true
 while keepRunning do
 outputStr = ""
-while line=STDIN.getc do
-	outputStr << line
-	#puts ("from ruby: #{line}")
+while char=STDIN.getc do
+	outputStr << char
+	puts ("♦️ char: #{char}")
 
 	# puts("ruby: #{outputStr}")
 	if (outputStr == "quit")
 		puts("♦️ quitting\n")
 		keepRunning = false
+		STDOUT.flush
+
+		puts("\n")
+		STDOUT.flush
+		break
 	end
 
-	if (line == "\n")
+	if (char == "\n")
 		puts("♦️ #{outputStr}")
 		STDOUT.flush
-		sleep(1)
 		break
 	end
 end
