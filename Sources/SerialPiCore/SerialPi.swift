@@ -382,8 +382,14 @@ public final class SerialPi {
 					// 	// everything coming in end with a line break?
 					// }
 					// </debugging>
-
-					self?.waitForInput()
+					if let lastChar = string.last {
+						if (lastChar == "\n") {
+							// Partials don't end w/ line breaks - wait for that before
+							// waiting for user input
+							self?.waitForInput()
+						}
+					}
+					// self?.waitForInput()
 				}
 			}
 
